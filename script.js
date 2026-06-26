@@ -202,13 +202,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         const hostname = window.location.hostname;
         const pathname = window.location.pathname;
 
-        let queryField = '';
-        let queryValue = '';
+        const urlParams = new URLSearchParams(window.location.search);
 
-        if (hostname.includes('github.io')) {
+        if (urlParams.has('slug')) {
+            queryField = 'slug';
+            queryValue = urlParams.get('slug');
+        } else if (hostname.includes('github.io')) {
             const segments = pathname.split('/').filter(Boolean);
             queryField = 'slug';
-            queryValue = segments.length > 0 ? segments[0] : '';
+            // Hindari menggunakan nama repository (wuzzkang-lp) sebagai slug jika tidak ada segment lain
+            if (segments.length > 1) {
+                queryValue = segments[1]; // misal wuzzkang.github.io/wuzzkang-lp/slug-name
+            } else if (segments.length === 1 && segments[0] !== 'wuzzkang-lp') {
+                queryValue = segments[0]; // misal wuzzkang.github.io/slug-name (jika custom domain/user page)
+            } else {
+                queryValue = '';
+            }
         } else {
             queryField = 'custom_domain';
             queryValue = hostname;
@@ -216,11 +225,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Mode Testing Lokal (localhost)
         if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('bmstaging.id')) {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('slug')) {
-                queryField = 'slug';
-                queryValue = urlParams.get('slug');
-            } else {
+            if (!queryValue) {
                 throw new Error("Tambahkan parameter ?slug=nama-toko di URL untuk testing lokal.");
             }
         }
