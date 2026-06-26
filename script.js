@@ -115,7 +115,188 @@ const renderError = (message) => {
 const renderPage = (pageConfig) => {
     const appEl = document.getElementById('app');
     
-    // 1. Update Dinamis Tailwind Config (Theme Color)
+    const templateType = pageConfig.meta?.template_type || 'store';
+    
+    if (templateType === 'wedding') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const guestName = urlParams.get('to') || urlParams.get('recipient') || 'Tamu Undangan';
+        
+        // 1. Dynamic Font Pairing for Wedding (Serif + Cursive)
+        if (!document.getElementById('wedding-fonts')) {
+            const link = document.createElement('link');
+            link.id = 'wedding-fonts';
+            link.rel = 'stylesheet';
+            link.href = 'https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@300;400;500;600;700&display=swap';
+            document.head.appendChild(link);
+        }
+        
+        // 2. Set dynamic theme colors based on theme choice
+        const themeColors = {
+            'sage-green': { primary: '#5A7C64', secondary: '#E8EFE9', text: '#2F3E33', bg: '#F4F7F4' },
+            'rose-gold': { primary: '#B76E79', secondary: '#F9ECEF', text: '#4E3639', bg: '#FDF8F9' },
+            'elegant-navy': { primary: '#1D2D44', secondary: '#E0E5EC', text: '#0D131A', bg: '#F8F9FA' },
+            'classic-gold': { primary: '#C5A880', secondary: '#F5EFE6', text: '#3E3427', bg: '#FCFBF9' },
+            'rustic-brown': { primary: '#8B5A2B', secondary: '#F2E6D9', text: '#3D2813', bg: '#FAF6F0' },
+        };
+        
+        const themeName = pageConfig.meta?.theme || 'classic-gold';
+        const colors = themeColors[themeName] || themeColors['classic-gold'];
+        
+        // Inject style for fonts and colors
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .wedding-font-serif { font-family: 'Playfair Display', serif !important; }
+            .wedding-font-cursive { font-family: 'Great Vibes', cursive !important; }
+            .wedding-font-sans { font-family: 'Poppins', sans-serif !important; }
+            .bg-wedding-primary { background-color: ${colors.primary} !important; }
+            .text-wedding-primary { color: ${colors.primary} !important; }
+            .border-wedding-primary { border-color: ${colors.primary} !important; }
+            .bg-wedding-secondary { background-color: ${colors.secondary} !important; }
+        `;
+        document.head.appendChild(style);
+        
+        // Apply page style
+        document.body.style.backgroundColor = colors.bg;
+        document.body.style.color = colors.text;
+        document.body.className = 'wedding-font-sans transition-colors duration-300 min-h-screen flex flex-col';
+        
+        // Render SEO title
+        const metaTitle = pageConfig.meta?.title || 'Undangan Pernikahan';
+        document.title = metaTitle;
+        updateMetaTag('property', 'og:title', metaTitle);
+        
+        // Build Wedding HTML
+        const content = pageConfig.content || {};
+        const groom = content.groom || {};
+        const bride = content.bride || {};
+        const akad = content.akad || {};
+        const resepsi = content.resepsi || {};
+        const gift = content.gift || {};
+        const quote = content.quote || 'Semoga menjadi keluarga yang sakinah, mawaddah, warahmah.';
+        
+        let giftHtml = '';
+        if (gift && gift.bank_name && gift.account_number) {
+            giftHtml = `
+                <div class="mt-12 bg-white rounded-3xl p-8 max-w-md mx-auto shadow-sm border border-slate-100 text-center">
+                    <span class="text-3xl">🎁</span>
+                    <h3 class="wedding-font-serif text-2xl font-bold mt-2 mb-4">Kado Digital</h3>
+                    <p class="text-sm text-slate-500 mb-4">Bagi yang ingin mengirimkan hadiah kasih, dapat ditransfer melalui rekening berikut:</p>
+                    <div class="bg-wedding-secondary/50 rounded-2xl p-4 inline-block w-full">
+                        <div class="font-bold text-sm text-slate-500">${gift.bank_name}</div>
+                        <div class="text-lg font-mono font-bold text-wedding-primary my-1 select-all">${gift.account_number}</div>
+                        <div class="text-xs text-slate-600 font-medium">a/n ${gift.account_holder || ''}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        const weddingHtml = `
+            <!-- Cover / Opening Card -->
+            <section class="min-h-screen flex flex-col items-center justify-center text-center px-4 relative overflow-hidden bg-wedding-secondary/20">
+                <div class="absolute inset-0 opacity-10 pointer-events-none bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80');"></div>
+                <div class="max-w-2xl mx-auto z-10 py-12">
+                    <p class="wedding-font-serif uppercase tracking-[0.25em] text-xs font-semibold text-wedding-primary mb-4">Walimatul 'Ursy</p>
+                    <h1 class="wedding-font-cursive text-7xl md:text-8xl text-wedding-primary my-6">${groom.nickname || 'Groom'} & ${bride.nickname || 'Bride'}</h1>
+                    <p class="text-sm text-slate-500 max-w-md mx-auto leading-relaxed mb-12">Kami mengundang Anda untuk merayakan pernikahan kami.</p>
+                    
+                    <div class="bg-white/80 backdrop-blur-md rounded-3xl p-6 shadow-md inline-block max-w-sm border border-wedding-primary/10">
+                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wider mb-2">Kepada Yth. Bapak/Ibu/Saudara/i:</p>
+                        <h3 class="wedding-font-serif text-xl font-bold text-slate-800">${guestName}</h3>
+                        <p class="text-[10px] text-slate-400 mt-2">*Mohon maaf bila ada kesalahan penulisan nama/gelar</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bride and Groom Section -->
+            <section id="bride-groom" class="py-24 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto">
+                <div class="wedding-font-serif italic text-lg text-slate-500 mb-8 max-w-xl mx-auto px-4">
+                    "${quote}"
+                </div>
+                
+                <h2 class="wedding-font-cursive text-5xl text-wedding-primary mt-12 mb-16">Kedua Mempelai</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mt-8">
+                    <!-- Groom -->
+                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                        <div class="h-20 w-20 rounded-full bg-wedding-secondary text-wedding-primary text-4xl flex items-center justify-center mx-auto mb-6">🤵</div>
+                        <h3 class="wedding-font-serif text-2xl font-bold text-slate-900">${groom.name || ''}</h3>
+                        <p class="text-xs text-slate-500 mt-3 leading-relaxed">
+                            Putra tercinta dari:<br>
+                            <span class="font-bold text-slate-700">${groom.father || ''}</span> & <span class="font-bold text-slate-700">${groom.mother || ''}</span>
+                        </p>
+                    </div>
+                    
+                    <!-- Bride -->
+                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                        <div class="h-20 w-20 rounded-full bg-wedding-secondary text-wedding-primary text-4xl flex items-center justify-center mx-auto mb-6">👰</div>
+                        <h3 class="wedding-font-serif text-2xl font-bold text-slate-900">${bride.name || ''}</h3>
+                        <p class="text-xs text-slate-500 mt-3 leading-relaxed">
+                            Putri tercinta dari:<br>
+                            <span class="font-bold text-slate-700">${bride.father || ''}</span> & <span class="font-bold text-slate-700">${bride.mother || ''}</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Events Section -->
+            <section id="events" class="py-20 px-4 bg-wedding-secondary/10">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h2 class="wedding-font-cursive text-5xl text-wedding-primary mb-16">Acara & Informasi</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Akad Nikah -->
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 text-center flex flex-col justify-between">
+                            <div>
+                                <span class="text-3xl">💍</span>
+                                <h3 class="wedding-font-serif text-2xl font-bold mt-2 mb-4">Akad Nikah</h3>
+                                <p class="text-sm font-semibold text-slate-600">${akad.date || ''}</p>
+                                <p class="text-xs text-slate-500 mt-1">${akad.time || ''}</p>
+                                <p class="text-sm font-medium text-slate-700 mt-6 max-w-xs mx-auto">${akad.location || ''}</p>
+                            </div>
+                            ${akad.maps_url ? `
+                                <a href="${akad.maps_url}" target="_blank" rel="noopener noreferrer" class="mt-8 inline-block bg-wedding-primary text-white text-xs font-semibold px-6 py-3 rounded-full hover:opacity-95 transition-opacity">
+                                    📍 Buka Google Maps
+                                </a>
+                            ` : ''}
+                        </div>
+                        
+                        <!-- Resepsi -->
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 text-center flex flex-col justify-between">
+                            <div>
+                                <span class="text-3xl">🎉</span>
+                                <h3 class="wedding-font-serif text-2xl font-bold mt-2 mb-4">Resepsi</h3>
+                                <p class="text-sm font-semibold text-slate-600">${resepsi.date || ''}</p>
+                                <p class="text-xs text-slate-500 mt-1">${resepsi.time || ''}</p>
+                                <p class="text-sm font-medium text-slate-700 mt-6 max-w-xs mx-auto">${resepsi.location || ''}</p>
+                            </div>
+                            ${resepsi.maps_url ? `
+                                <a href="${resepsi.maps_url}" target="_blank" rel="noopener noreferrer" class="mt-8 inline-block bg-wedding-primary text-white text-xs font-semibold px-6 py-3 rounded-full hover:opacity-95 transition-opacity">
+                                    📍 Buka Google Maps
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    ${giftHtml}
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="bg-slate-900 py-16 text-center text-slate-400 mt-auto">
+                <div class="max-w-md mx-auto px-4">
+                    <p class="wedding-font-cursive text-4xl text-wedding-primary mb-3">Terima Kasih</p>
+                    <p class="text-xs leading-relaxed text-slate-500">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu kepada kedua mempelai.</p>
+                    <div class="h-px bg-slate-800 my-8"></div>
+                    <p class="text-[10px] text-slate-600">© ${new Date().getFullYear()} ${groom.nickname || 'Groom'} & ${bride.nickname || 'Bride'} Wedding Invitation. Created by WuzzKang.</p>
+                </div>
+            </footer>
+        `;
+        
+        appEl.innerHTML = weddingHtml;
+        return;
+    }
+
+    // 1. Update Dinamis Tailwind Config (Theme Color) - Default Store
     const themeColors = {
         light: '#3b82f6',       // Blue
         dark: '#1f2937',        // Slate
