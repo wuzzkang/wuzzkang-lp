@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    
+    <!-- SEO Meta Tags Dasar -->
+    <meta property="og:title" content="Loading...">
+    <meta property="og:description" content="Tunggu sebentar, kami sedang memuat halaman.">
+    <meta property="og:image" content="">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#3b82f6">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Konfigurasi Tailwind Dinamis (Warna Primary akan ditimpa oleh JavaScript nanti)
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#3b82f6', 
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* CSS Animasi Khusus & Fallback styling di luar Tailwind */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(59, 130, 246, 0.15);
+            border-left-color: var(--primary-color, #3b82f6);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased text-slate-800">
+
+    <!-- State Loading -->
+    <div id="loading" class="fixed inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-md z-50 transition-opacity duration-300">
+        <div class="spinner mb-4"></div>
+        <p class="text-slate-500 font-medium animate-pulse">Memuat Toko...</p>
+    </div>
+
+    <!-- Container Utama untuk Component-Based Rendering -->
+    <div id="app" class="flex-grow flex flex-col w-full"></div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
