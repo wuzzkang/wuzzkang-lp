@@ -203,6 +203,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const pathname = window.location.pathname;
 
         const urlParams = new URLSearchParams(window.location.search);
+        let queryField = '';
+        let queryValue = '';
 
         if (urlParams.has('slug')) {
             queryField = 'slug';
