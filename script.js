@@ -188,7 +188,7 @@ const renderPage = async (pageConfig) => {
     }
     
     // 2. Update SEO Meta Tags
-    const metaTitle = pageConfig.meta?.title || 'WuzzKang Landing Page';
+    const metaTitle = pageConfig.meta?.title || 'Siluet Landing Page';
     const metaDesc = pageConfig.content?.hero?.subheading || '';
     
     document.title = metaTitle;
@@ -301,7 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Set page title immediately after data is fetched — applies to ALL template types
         // (wedding template doesn't have its own title update, so this is critical)
-        const pageTitle = pageConfig.meta?.title || 'WuzzKang Landing Page';
+        const pageTitle = pageConfig.meta?.title || 'Siluet Landing Page';
         document.title = pageTitle;
 
         // Inject FB Pixel jika ada
