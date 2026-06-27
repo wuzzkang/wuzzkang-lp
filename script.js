@@ -315,6 +315,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (err) {
         console.error(err);
+        document.title = "Oops! Terjadi Masalah";
         appEl.innerHTML = renderError(err.message);
     } finally {
         // Hilangkan Loading Spinner dengan transisi halus
