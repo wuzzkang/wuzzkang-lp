@@ -6,6 +6,14 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==========================================
+// CACHE BUSTER CONFIG (FOR DEV & PRODUCTION DEPLOYMENTS)
+// ==========================================
+const LP_VERSION = '1.0.4'; // Bump this version to force-refresh clients' cache on update
+const globalUrlParams = new URLSearchParams(window.location.search);
+const hasNoCache = globalUrlParams.has('nocache') || globalUrlParams.has('dev');
+const cacheBustQuery = `?v=${hasNoCache ? Date.now() : LP_VERSION}`;
+
+// ==========================================
 // RENDERING COMPONENTS (TEMPLATE LITERALS)
 // ==========================================
 
@@ -133,12 +141,12 @@ const renderPage = async (pageConfig) => {
         
         try {
             console.log(`[LP Router] Loading birthday design template: ${designKey}...`);
-            const module = await import(`./templates/birthday/${designKey}.js`);
+            const module = await import(`./templates/birthday/${designKey}.js${cacheBustQuery}`);
             await module.render(pageConfig, guestName);
         } catch (e) {
             console.error(`[LP Router] Failed to load template ${designKey}, falling back to cute-balloon:`, e);
             try {
-                const module = await import(`./templates/birthday/cute-balloon.js`);
+                const module = await import(`./templates/birthday/cute-balloon.js${cacheBustQuery}`);
                 await module.render(pageConfig, guestName);
             } catch (err) {
                 console.error('[LP Router] Fallback template failed:', err);
@@ -164,12 +172,12 @@ const renderPage = async (pageConfig) => {
         
         try {
             console.log(`[LP Router] Loading wedding design template: ${designKey}...`);
-            const module = await import(`./templates/wedding/${designKey}.js`);
+            const module = await import(`./templates/wedding/${designKey}.js${cacheBustQuery}`);
             await module.render(pageConfig, guestName);
         } catch (e) {
             console.error(`[LP Router] Failed to load template ${designKey}, falling back to sage-green:`, e);
             try {
-                const module = await import(`./templates/wedding/sage-green.js`);
+                const module = await import(`./templates/wedding/sage-green.js${cacheBustQuery}`);
                 await module.render(pageConfig, guestName);
             } catch (err) {
                 console.error('[LP Router] Fallback template failed:', err);
