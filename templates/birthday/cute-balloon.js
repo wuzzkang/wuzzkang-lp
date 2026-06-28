@@ -2,7 +2,7 @@
  * Cute Balloon Birthday Invitation Template
  * Cheerful balloon theme, pastel colors, playful fonts, perfect for kids.
  */
-export async function render(pageConfig, guestName) {
+export async function render(pageConfig, guestName = 'Tamu Undangan') {
     const appEl = document.getElementById('app');
     const content = pageConfig.content || {};
     const celebrant = content.celebrant || {};
@@ -63,6 +63,13 @@ export async function render(pageConfig, guestName) {
                 <span class="text-[10px] tracking-widest uppercase font-bold text-pink-400">Kamu Diundang! 🎈</span>
                 <h3 class="text-3xl balloon-title my-4 text-pink-500 float-balloon">Pesta Ulang Tahun</h3>
                 <div class="text-[18px] font-extrabold text-slate-800">${celebrant.nickname || 'Anak'} yang ke-${celebrant.age || '1'}</div>
+                
+                <div class="mt-4">
+                    <p class="text-[9px] text-slate-400 mb-1.5">Spesial untuk Bapak/Ibu/Teman:</p>
+                    <div class="bg-white/80 border border-pink-100 rounded-full px-4 py-1.5 inline-block shadow-sm">
+                        <div class="font-bold text-xs text-pink-600">${guestName}</div>
+                    </div>
+                </div>
             </div>
 
             <div class="my-6 flex flex-col items-center gap-4">

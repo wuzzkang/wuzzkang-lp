@@ -2,7 +2,7 @@
  * Elegant Gold Birthday Invitation Template
  * Luxury dark-gold theme, serif fonts, perfect for adult/teenagers celebrations.
  */
-export async function render(pageConfig, guestName) {
+export async function render(pageConfig, guestName = 'Tamu Undangan') {
     const appEl = document.getElementById('app');
     const content = pageConfig.content || {};
     const celebrant = content.celebrant || {};
@@ -53,7 +53,13 @@ export async function render(pageConfig, guestName) {
             <div class="my-6 py-6 border-b border-yellow-900/30 relative">
                 <span class="text-[9px] tracking-widest uppercase font-bold text-[#D4AF37] opacity-80">YOU ARE INVITED TO CELEBRATE</span>
                 <h3 class="text-3xl gold-title my-4 font-bold tracking-wide shining-gold">THE BIRTHDAY PARTY</h3>
-                <div class="text-[10px] tracking-widest uppercase text-slate-400">Honoring the milestone of</div>
+                
+                <div class="mt-4">
+                    <p class="text-[9px] text-slate-400 mb-1.5">Dear Guest:</p>
+                    <div class="bg-[#1E1E1E] border border-yellow-950/40 rounded-full px-4 py-1.5 inline-block shadow-sm">
+                        <div class="font-bold text-xs text-[#D4AF37]">${guestName}</div>
+                    </div>
+                </div>
             </div>
 
             <div class="my-6 flex flex-col items-center gap-4">
