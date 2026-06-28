@@ -117,6 +117,35 @@ const renderPage = async (pageConfig) => {
     
     const templateType = pageConfig.meta?.template_type || 'store';
     
+    if (templateType === 'birthday') {
+        const designKey = pageConfig.meta?.design_key || 'cute-balloon';
+        
+        // Dynamic Font Pairing for Birthday
+        if (!document.getElementById('birthday-fonts')) {
+            const link = document.createElement('link');
+            link.id = 'birthday-fonts';
+            link.rel = 'stylesheet';
+            link.href = 'https://fonts.googleapis.com/css2?family=Fredoka+One&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:wght@300;400;500;600;700&display=swap';
+            document.head.appendChild(link);
+        }
+        
+        try {
+            console.log(`[LP Router] Loading birthday design template: ${designKey}...`);
+            const module = await import(`./templates/birthday/${designKey}.js`);
+            await module.render(pageConfig);
+        } catch (e) {
+            console.error(`[LP Router] Failed to load template ${designKey}, falling back to cute-balloon:`, e);
+            try {
+                const module = await import(`./templates/birthday/cute-balloon.js`);
+                await module.render(pageConfig);
+            } catch (err) {
+                console.error('[LP Router] Fallback template failed:', err);
+                appEl.innerHTML = renderError('Gagal memuat template undangan ulang tahun.');
+            }
+        }
+        return;
+    }
+
     if (templateType === 'wedding') {
         const urlParams = new URLSearchParams(window.location.search);
         const guestName = urlParams.get('to') || urlParams.get('recipient') || 'Tamu Undangan';
