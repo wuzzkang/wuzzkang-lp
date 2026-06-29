@@ -8,7 +8,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ==========================================
 // CACHE BUSTER CONFIG (FOR DEV & PRODUCTION DEPLOYMENTS)
 // ==========================================
-const LP_VERSION = '1.0.5'; // Bump this version to force-refresh clients' cache on update
+const LP_VERSION = '1.0.6'; // Bump this version to force-refresh clients' cache on update
 const globalUrlParams = new URLSearchParams(window.location.search);
 const hasNoCache = globalUrlParams.has('nocache') || globalUrlParams.has('dev');
 const cacheBustQuery = `?v=${hasNoCache ? Date.now() : LP_VERSION}`;
@@ -201,6 +201,25 @@ const renderPage = async (pageConfig) => {
             } catch (err) {
                 console.error('[LP Router] Fallback template failed:', err);
                 appEl.innerHTML = renderError('Gagal memuat template toko online.');
+            }
+        }
+        return;
+    }
+
+    if (templateType === 'campaign') {
+        const designKey = pageConfig.meta?.design_key || 'neon-conversion';
+        try {
+            console.log(`[LP Router] Loading campaign template: ${designKey}...`);
+            const module = await import(`./templates/campaign/${designKey}.js${cacheBustQuery}`);
+            await module.render(pageConfig, 'Tamu');
+        } catch (e) {
+            console.error(`[LP Router] Failed to load template ${designKey}, falling back to neon-conversion:`, e);
+            try {
+                const module = await import(`./templates/campaign/neon-conversion.js${cacheBustQuery}`);
+                await module.render(pageConfig, 'Tamu');
+            } catch (err) {
+                console.error('[LP Router] Fallback template failed:', err);
+                appEl.innerHTML = renderError('Gagal memuat template campaign.');
             }
         }
         return;
