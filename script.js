@@ -8,7 +8,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ==========================================
 // CACHE BUSTER CONFIG (FOR DEV & PRODUCTION DEPLOYMENTS)
 // ==========================================
-const LP_VERSION = '1.0.7'; // Bump this version to force-refresh clients' cache on update
+const LP_VERSION = '1.0.8'; // Bump this version to force-refresh clients' cache on update
 const globalUrlParams = new URLSearchParams(window.location.search);
 const hasNoCache = globalUrlParams.has('nocache') || globalUrlParams.has('dev');
 const cacheBustQuery = `?v=${hasNoCache ? Date.now() : LP_VERSION}`;
@@ -381,11 +381,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const pageTitle = pageConfig.meta?.title || 'Siluet Landing Page';
         document.title = pageTitle;
 
-        // Inject FB Pixel jika ada
-        const pixelId = pageConfig.meta?.facebook_pixel_id;
-        if (pixelId) {
-            injectFacebookPixel(pixelId);
-        }
+        // ── Tracking Pixel Injection ──────────────────────────────────────────
+        // Reads IDs merged into pageConfig.meta at generate-time from profiles.tracking_config.
+        // Works for all delivery modes: GitHub Pages slug, bmstaging subdomain, and future
+        // custom domains — no template-level or routing changes needed.
+        const meta = pageConfig.meta || {};
+        if (meta.facebook_pixel_id)   injectFacebookPixel(meta.facebook_pixel_id);
+        if (meta.google_analytics_id) injectGoogleTag(meta.google_analytics_id);
+        if (meta.google_ads_id)       injectGoogleTag(meta.google_ads_id);
+        if (meta.tiktok_pixel_id)     injectTikTokPixel(meta.tiktok_pixel_id);
 
         // Render keseluruhan komponen UI murni berdasarkan JSON
         renderPage(pageConfig);
@@ -417,6 +421,7 @@ function updateMetaTag(attribute, attributeValue, contentValue) {
 }
 
 function injectFacebookPixel(pixelId) {
+    if (!pixelId) return;
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -437,4 +442,58 @@ function injectFacebookPixel(pixelId) {
     img.src = `https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`;
     noscript.appendChild(img);
     document.head.appendChild(noscript);
+}
+
+/**
+ * Injects a Google Tag (gtag.js) script for Google Analytics 4 (G-...) or
+ * Google Ads conversion tracking (AW-...). Safe to call multiple times with
+ * different IDs — gtag handles multiple config() calls on the same global.
+ * Custom-domain-ready: works on any domain, no routing changes needed.
+ */
+function injectGoogleTag(tagId) {
+    if (!tagId) return;
+    if (document.getElementById(`gtag-${tagId}`)) return; // already injected
+
+    // Initialize gtag dataLayer once
+    if (!window.dataLayer) {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function() { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+    }
+
+    const script = document.createElement('script');
+    script.id = `gtag-${tagId}`;
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${tagId}`;
+    document.head.appendChild(script);
+
+    window.gtag('config', tagId);
+}
+
+/**
+ * Injects the TikTok Pixel base code.
+ * Custom-domain-ready: the pixel script targets pixel.tiktok.com — no origin
+ * assumptions are made, so it works on any domain or subdomain.
+ */
+function injectTikTokPixel(pixelId) {
+    if (!pixelId) return;
+    if (window.ttq) return; // already injected
+
+    !function(w,d,t){
+        w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];
+        ttq.methods=['page','track','identify','instances','debug','on','off','once','ready','alias','group','enableCookie','disableCookie'];
+        ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+        for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+        ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
+        ttq.load=function(e,n){var i='https://analytics.tiktok.com/i18n/pixel/events.js';
+        ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;ttq._t=ttq._t||{};
+        ttq._t[e]=+new Date;ttq._o=ttq._o||{};
+        ttq._o[e]=n||{};
+        var o=document.createElement('script');
+        o.type='text/javascript';o.async=!0;o.src=i+'?sdkid='+e+'&lib='+t;
+        var a=document.getElementsByTagName('script')[0];
+        a.parentNode.insertBefore(o,a)};
+        ttq.load(pixelId);
+        ttq.page();
+    }(window,document,'ttq');
 }
