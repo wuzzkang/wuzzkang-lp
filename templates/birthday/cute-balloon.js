@@ -190,7 +190,7 @@ export async function render(pageConfig, guestName = 'Tamu Undangan') {
                 <div style="display:inline-block; position:relative;">
                     <div style="font-size:17px; font-weight:800; color:#5B3680; font-family:'Nunito',sans-serif;">${celebrant.nickname || celebrant.name?.split(' ')[0] || 'Si Kecil'}</div>
                     <!-- Age badge -->
-                    <div class="age-badge" style="position:absolute; top:-28px; right:-38px; width:54px; height:54px; background:linear-gradient(135deg,#FF6B6B,#FFD93D); border-radius:50%; border:3px solid white; box-shadow:0 4px 12px rgba(255,107,107,0.4); display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                    <div class="age-badge" style="position:absolute; top:-28px; left:calc(100% + 4px); width:54px; height:54px; background:linear-gradient(135deg,#FF6B6B,#FFD93D); border-radius:50%; border:3px solid white; box-shadow:0 4px 12px rgba(255,107,107,0.4); display:flex; flex-direction:column; align-items:center; justify-content:center;">
                         <div class="cb-title" style="font-size:20px; color:white; line-height:1;">${celebrant.age || '?'}</div>
                         <div style="font-size:7px; color:rgba(255,255,255,0.9); font-weight:700; font-family:'Nunito',sans-serif;">TAHUN</div>
                     </div>
