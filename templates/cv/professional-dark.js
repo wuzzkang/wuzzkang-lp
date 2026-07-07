@@ -462,8 +462,8 @@ export async function render(pageConfig, guestName = '') {
                         ${icon.download} Download PDF
                     </button>
                     <button
+                        id="cv-share-btn"
                         class="cv-btn cv-btn-secondary"
-                        onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.textContent='✅ Link Tersalin!';setTimeout(()=>{this.innerHTML='${icon.share} Bagikan CV';},2000)})"
                         aria-label="Salin link CV ini"
                         title="Bagikan link CV"
                     >
@@ -508,4 +508,17 @@ export async function render(pageConfig, guestName = '') {
 
     const ogDesc = document.querySelector('meta[property="og:description"]');
     if (ogDesc) ogDesc.setAttribute('content', profile.summary || `CV profesional ${profile.name || ''}`);
+
+    // Add event listener programmatically to avoid HTML quote nesting issues
+    const shareBtn = document.getElementById('cv-share-btn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', function() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                this.innerHTML = '✅ Link Tersalin!';
+                setTimeout(() => {
+                    this.innerHTML = `${icon.share} Bagikan CV`;
+                }, 2000);
+            });
+        });
+    }
 }
