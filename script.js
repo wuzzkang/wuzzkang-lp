@@ -5,6 +5,12 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Global Branding Config
+const BRAND_CONFIG = {
+    name: 'Siluet',
+    domain: 'siluet.web.id'
+};
+
 // ==========================================
 // CACHE BUSTER CONFIG (FOR DEV & PRODUCTION DEPLOYMENTS)
 // ==========================================
@@ -230,12 +236,12 @@ const renderPage = async (pageConfig) => {
         try {
             console.log(`[LP Router] Loading cv template: ${designKey}...`);
             const module = await import(`./templates/cv/${designKey}.js${cacheBustQuery}`);
-            await module.render(pageConfig, '');
+            await module.render(pageConfig, '', BRAND_CONFIG);
         } catch (e) {
             console.error(`[LP Router] Failed to load cv template ${designKey}, falling back to professional-dark:`, e);
             try {
                 const module = await import(`./templates/cv/professional-dark.js${cacheBustQuery}`);
-                await module.render(pageConfig, '');
+                await module.render(pageConfig, '', BRAND_CONFIG);
             } catch (err) {
                 console.error('[LP Router] CV fallback template failed:', err);
                 appEl.innerHTML = renderError('Gagal memuat template CV.');
