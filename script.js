@@ -8,7 +8,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ==========================================
 // CACHE BUSTER CONFIG (FOR DEV & PRODUCTION DEPLOYMENTS)
 // ==========================================
-const LP_VERSION = '1.0.9'; // Bump this version to force-refresh clients' cache on update
+const LP_VERSION = '1.1.0'; // Bump this version to force-refresh clients' cache on update
 const globalUrlParams = new URLSearchParams(window.location.search);
 const hasNoCache = globalUrlParams.has('nocache') || globalUrlParams.has('dev');
 const cacheBustQuery = `?v=${hasNoCache ? Date.now() : LP_VERSION}`;
