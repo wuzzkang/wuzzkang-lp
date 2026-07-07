@@ -8,7 +8,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ==========================================
 // CACHE BUSTER CONFIG (FOR DEV & PRODUCTION DEPLOYMENTS)
 // ==========================================
-const LP_VERSION = '1.1.1'; // Bump this version to force-refresh clients' cache on update
+const LP_VERSION = '1.2.0'; // Bump this version to force-refresh clients' cache on update
 const globalUrlParams = new URLSearchParams(window.location.search);
 const hasNoCache = globalUrlParams.has('nocache') || globalUrlParams.has('dev');
 const cacheBustQuery = `?v=${hasNoCache ? Date.now() : LP_VERSION}`;
@@ -220,6 +220,25 @@ const renderPage = async (pageConfig) => {
             } catch (err) {
                 console.error('[LP Router] Fallback template failed:', err);
                 appEl.innerHTML = renderError('Gagal memuat template campaign.');
+            }
+        }
+        return;
+    }
+
+    if (templateType === 'cv') {
+        const designKey = pageConfig.meta?.design_key || 'professional-dark';
+        try {
+            console.log(`[LP Router] Loading cv template: ${designKey}...`);
+            const module = await import(`./templates/cv/${designKey}.js${cacheBustQuery}`);
+            await module.render(pageConfig, '');
+        } catch (e) {
+            console.error(`[LP Router] Failed to load cv template ${designKey}, falling back to professional-dark:`, e);
+            try {
+                const module = await import(`./templates/cv/professional-dark.js${cacheBustQuery}`);
+                await module.render(pageConfig, '');
+            } catch (err) {
+                console.error('[LP Router] CV fallback template failed:', err);
+                appEl.innerHTML = renderError('Gagal memuat template CV.');
             }
         }
         return;
