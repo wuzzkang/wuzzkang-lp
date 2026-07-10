@@ -492,7 +492,10 @@ function injectGoogleTag(tagId) {
     script.src = `https://www.googletagmanager.com/gtag/js?id=${tagId}`;
     document.head.appendChild(script);
 
-    window.gtag('config', tagId);
+    window.gtag('config', tagId, {
+        'cookie_domain': window.location.hostname,
+        'cookie_flags': 'SameSite=None;Secure'
+    });
 }
 
 /**
