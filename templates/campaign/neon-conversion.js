@@ -70,6 +70,13 @@ export async function render(pageConfig, guestName = 'Tamu') {
     // WA Link generator for general checkout
     const waUrlGeneral = `https://wa.me/${contact.whatsapp ? contact.whatsapp.replace(/\D/g, '') : ''}?text=${encodeURIComponent(`Halo,\nsaya tertarik dengan penawaran Anda: "${hero.headline || ''}".`)}`;
 
+    // Compile dynamic CTA link (WhatsApp or custom URL)
+    let finalCtaUrl = waUrlGeneral;
+    if (contact.cta_url && contact.cta_url.trim()) {
+        const urlStr = contact.cta_url.trim();
+        finalCtaUrl = (urlStr.startsWith('http://') || urlStr.startsWith('https://')) ? urlStr : `https://${urlStr}`;
+    }
+
     // Compile problems HTML list
     let problemsListHtml = '';
     if (Array.isArray(problems.list)) {
@@ -137,7 +144,7 @@ export async function render(pageConfig, guestName = 'Tamu') {
                     <span class="font-extrabold tracking-tight text-white text-xs uppercase">PROMO CAMPAIGN</span>
                 </div>
                 <a 
-                    href="${waUrlGeneral}"
+                    href="${finalCtaUrl}"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="py-1.5 px-3.5 rounded-lg border border-pink-500/30 hover:border-pink-500 text-pink-500 text-[10px] font-bold tracking-wider uppercase transition-all"
@@ -164,7 +171,7 @@ export async function render(pageConfig, guestName = 'Tamu') {
                     </p>
                     <div class="flex justify-center">
                         <a 
-                            href="${waUrlGeneral}" 
+                            href="${finalCtaUrl}" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             class="py-3.5 px-8 rounded-xl font-bold text-white text-xs md:text-sm tracking-wide neon-btn-pink pulse-neon text-center active:scale-95"
@@ -241,7 +248,7 @@ export async function render(pageConfig, guestName = 'Tamu') {
                 </div>
                 <div class="flex justify-center">
                     <a 
-                        href="${waUrlGeneral}" 
+                        href="${finalCtaUrl}" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         class="py-3.5 px-8 rounded-xl font-bold text-white text-xs md:text-sm tracking-wide neon-btn-pink pulse-neon text-center active:scale-95"
