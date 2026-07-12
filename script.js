@@ -145,9 +145,11 @@ const renderPage = async (pageConfig) => {
             document.head.appendChild(link);
         }
         
+        const templateVersion = pageConfig.meta?.template_version || 1;
+        const resolvedFile = templateVersion <= 1 ? `${designKey}.js` : `${designKey}-v${templateVersion}.js`;
         try {
-            console.log(`[LP Router] Loading birthday design template: ${designKey}...`);
-            const module = await import(`./templates/birthday/${designKey}.js${cacheBustQuery}`);
+            console.log(`[LP Router] Loading birthday design template: ${designKey} (v${templateVersion})...`);
+            const module = await import(`./templates/birthday/${resolvedFile}${cacheBustQuery}`);
             await module.render(pageConfig, guestName);
         } catch (e) {
             console.error(`[LP Router] Failed to load template ${designKey}, falling back to cute-balloon:`, e);
@@ -176,9 +178,11 @@ const renderPage = async (pageConfig) => {
             document.head.appendChild(link);
         }
         
+        const templateVersion = pageConfig.meta?.template_version || 1;
+        const resolvedFile = templateVersion <= 1 ? `${designKey}.js` : `${designKey}-v${templateVersion}.js`;
         try {
-            console.log(`[LP Router] Loading wedding design template: ${designKey}...`);
-            const module = await import(`./templates/wedding/${designKey}.js${cacheBustQuery}`);
+            console.log(`[LP Router] Loading wedding design template: ${designKey} (v${templateVersion})...`);
+            const module = await import(`./templates/wedding/${resolvedFile}${cacheBustQuery}`);
             await module.render(pageConfig, guestName);
         } catch (e) {
             console.error(`[LP Router] Failed to load template ${designKey}, falling back to sage-green:`, e);
@@ -195,9 +199,11 @@ const renderPage = async (pageConfig) => {
 
     if (templateType === 'toko-online') {
         const designKey = pageConfig.meta?.design_key || 'modern-clean';
+        const templateVersion = pageConfig.meta?.template_version || 1;
+        const resolvedFile = templateVersion <= 1 ? `${designKey}.js` : `${designKey}-v${templateVersion}.js`;
         try {
-            console.log(`[LP Router] Loading toko-online template: ${designKey}...`);
-            const module = await import(`./templates/toko-online/${designKey}.js${cacheBustQuery}`);
+            console.log(`[LP Router] Loading toko-online template: ${designKey} (v${templateVersion})...`);
+            const module = await import(`./templates/toko-online/${resolvedFile}${cacheBustQuery}`);
             await module.render(pageConfig, 'Tamu');
         } catch (e) {
             console.error(`[LP Router] Failed to load template ${designKey}, falling back to modern-clean:`, e);
@@ -214,9 +220,11 @@ const renderPage = async (pageConfig) => {
 
     if (templateType === 'campaign') {
         const designKey = pageConfig.meta?.design_key || 'neon-conversion';
+        const templateVersion = pageConfig.meta?.template_version || 1;
+        const resolvedFile = templateVersion <= 1 ? `${designKey}.js` : `${designKey}-v${templateVersion}.js`;
         try {
-            console.log(`[LP Router] Loading campaign template: ${designKey}...`);
-            const module = await import(`./templates/campaign/${designKey}.js${cacheBustQuery}`);
+            console.log(`[LP Router] Loading campaign template: ${designKey} (v${templateVersion})...`);
+            const module = await import(`./templates/campaign/${resolvedFile}${cacheBustQuery}`);
             await module.render(pageConfig, 'Tamu');
         } catch (e) {
             console.error(`[LP Router] Failed to load template ${designKey}, falling back to neon-conversion:`, e);
@@ -233,9 +241,11 @@ const renderPage = async (pageConfig) => {
 
     if (templateType === 'cv') {
         const designKey = pageConfig.meta?.design_key || 'professional-dark';
+        const templateVersion = pageConfig.meta?.template_version || 1;
+        const resolvedFile = templateVersion <= 1 ? `${designKey}.js` : `${designKey}-v${templateVersion}.js`;
         try {
-            console.log(`[LP Router] Loading cv template: ${designKey}...`);
-            const module = await import(`./templates/cv/${designKey}.js${cacheBustQuery}`);
+            console.log(`[LP Router] Loading cv template: ${designKey} (v${templateVersion})...`);
+            const module = await import(`./templates/cv/${resolvedFile}${cacheBustQuery}`);
             await module.render(pageConfig, '', BRAND_CONFIG);
         } catch (e) {
             console.error(`[LP Router] Failed to load cv template ${designKey}, falling back to professional-dark:`, e);
