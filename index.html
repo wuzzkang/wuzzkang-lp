@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loading...</title>
-    
+
     <!-- SEO Meta Tags Dasar -->
     <meta property="og:title" content="Loading...">
     <meta property="og:description" content="Tunggu sebentar, kami sedang memuat halaman.">
@@ -15,7 +16,8 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -28,7 +30,7 @@
                         sans: ['Poppins', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#3b82f6', 
+                        primary: '#3b82f6',
                     }
                 }
             }
@@ -53,8 +55,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .fade-in {
@@ -62,17 +69,26 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
+
 <body class="min-h-screen flex flex-col antialiased text-slate-800">
 
     <!-- State Loading -->
-    <div id="loading" class="fixed inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-md z-50 transition-opacity duration-300">
+    <div id="loading"
+        class="fixed inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-md z-50 transition-opacity duration-300">
         <div class="spinner mb-4"></div>
-        <p class="text-slate-500 font-medium animate-pulse">Memuat Toko...</p>
+        <p class="text-slate-500 font-medium animate-pulse">Loading...</p>
     </div>
 
     <!-- Container Utama untuk Component-Based Rendering -->
@@ -80,4 +96,5 @@
 
     <script type="module" src="script.js"></script>
 </body>
+
 </html>
