@@ -236,6 +236,11 @@ export async function render(pageConfig, guestName = 'Tamu') {
                 </section>
             ` : ''}
 
+            <!-- FAQ Section -->
+            ${content.faqs && content.faqs.length > 0 ? `
+                <section class="px-6 py-16 max-w-3xl mx-auto w-full border-b border-gray-900" id="campaign-faq-root"></section>
+            ` : ''}
+
             <!-- Closing CTA Section -->
             <section class="px-6 py-16 text-center max-w-2xl mx-auto w-full">
                 <div class="mb-8">
@@ -267,4 +272,11 @@ export async function render(pageConfig, guestName = 'Tamu') {
             </footer>
         </div>
     `;
+
+    // Initialize FAQ component if available
+    const faqRoot = document.getElementById('campaign-faq-root');
+    if (faqRoot && Array.isArray(content.faqs) && content.faqs.length > 0) {
+        const { initFaq } = await import('../components/Faq.js');
+        await initFaq(faqRoot, content.faqs, { theme: 'neon-conversion' });
+    }
 }
