@@ -260,6 +260,27 @@ const renderPage = async (pageConfig) => {
         return;
     }
 
+    if (templateType === 'e-course') {
+        const designKey = pageConfig.meta?.design_key || 'purple-academy';
+        const templateVersion = pageConfig.meta?.template_version || 1;
+        const resolvedFile = templateVersion <= 1 ? `${designKey}.js` : `${designKey}-v${templateVersion}.js`;
+        try {
+            console.log(`[LP Router] Loading e-course template: ${designKey} (v${templateVersion})...`);
+            const module = await import(`./templates/e-course/${resolvedFile}${cacheBustQuery}`);
+            await module.render(pageConfig, 'Tamu');
+        } catch (e) {
+            console.error(`[LP Router] Failed to load e-course template ${designKey}, falling back to purple-academy:`, e);
+            try {
+                const module = await import(`./templates/e-course/purple-academy.js${cacheBustQuery}`);
+                await module.render(pageConfig, 'Tamu');
+            } catch (err) {
+                console.error('[LP Router] E-Course fallback template failed:', err);
+                appEl.innerHTML = renderError('Gagal memuat template e-course.');
+            }
+        }
+        return;
+    }
+
     // 1. Update Dinamis Tailwind Config (Theme Color) - Default Store
     const themeColors = {
         light: '#3b82f6',       // Blue
