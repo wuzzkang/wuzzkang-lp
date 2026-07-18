@@ -14,7 +14,7 @@ const BRAND_CONFIG = {
 // ==========================================
 // CACHE BUSTER CONFIG (FOR DEV & PRODUCTION DEPLOYMENTS)
 // ==========================================
-const LP_VERSION = '1.2.2'; // Bump this version to force-refresh clients' cache on update
+const LP_VERSION = '1.2.3'; // Bump this version to force-refresh clients' cache on update
 const globalUrlParams = new URLSearchParams(window.location.search);
 const hasNoCache = globalUrlParams.has('nocache') || globalUrlParams.has('dev');
 const cacheBustQuery = `?v=${hasNoCache ? Date.now() : LP_VERSION}`;
@@ -276,6 +276,27 @@ const renderPage = async (pageConfig) => {
             } catch (err) {
                 console.error('[LP Router] E-Course fallback template failed:', err);
                 appEl.innerHTML = renderError('Gagal memuat template e-course.');
+            }
+        }
+        return;
+    }
+
+    if (templateType === 'jasa') {
+        const designKey = pageConfig.meta?.design_key || 'professional-navy';
+        const templateVersion = pageConfig.meta?.template_version || 1;
+        const resolvedFile = templateVersion <= 1 ? `${designKey}.js` : `${designKey}-v${templateVersion}.js`;
+        try {
+            console.log(`[LP Router] Loading jasa template: ${designKey} (v${templateVersion})...`);
+            const module = await import(`./templates/jasa/${resolvedFile}${cacheBustQuery}`);
+            await module.render(pageConfig, 'Tamu', BRAND_CONFIG);
+        } catch (e) {
+            console.error(`[LP Router] Failed to load jasa template ${designKey}, falling back to professional-navy:`, e);
+            try {
+                const module = await import(`./templates/jasa/professional-navy.js${cacheBustQuery}`);
+                await module.render(pageConfig, 'Tamu', BRAND_CONFIG);
+            } catch (err) {
+                console.error('[LP Router] Jasa fallback template failed:', err);
+                appEl.innerHTML = renderError('Gagal memuat template jasa.');
             }
         }
         return;
