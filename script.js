@@ -131,6 +131,137 @@ const renderPage = async (pageConfig) => {
     
     const templateType = pageConfig.meta?.template_type || 'store';
     
+    if (templateType === 'dynamic-builder') {
+        const meta = pageConfig.meta || {};
+        const primaryColor = meta.primary_color || '#3b82f6';
+        const accentColor = meta.accent_color || '#f97316';
+        const fontFamily = meta.font_family || 'Inter';
+        const borderRadius = meta.border_radius || '0.5rem';
+
+        // 1. Dynamic Font Pairing
+        const fontId = `font-${fontFamily.toLowerCase().replace(/\s+/g, '-')}`;
+        if (!document.getElementById(fontId)) {
+            const link = document.createElement('link');
+            link.id = fontId;
+            link.rel = 'stylesheet';
+            link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontFamily)}:wght@300;400;500;600;700;800;900&display=swap`;
+            document.head.appendChild(link);
+        }
+
+        // 2. Set Root CSS variables
+        document.documentElement.style.setProperty('--primary-color', primaryColor);
+        document.documentElement.style.setProperty('--accent-color', accentColor);
+        document.documentElement.style.setProperty('--border-radius', borderRadius);
+
+        if (!document.getElementById('dynamic-builder-styles')) {
+            const style = document.createElement('style');
+            style.id = 'dynamic-builder-styles';
+            style.innerHTML = `
+                #app {
+                    font-family: '${fontFamily}', sans-serif;
+                }
+                .jasa-navy       { background-color: #0f2e4c; }
+                .jasa-navy-dark  { background-color: #0a1f35; }
+                .jasa-navy-mid   { background-color: #163654; }
+                .jasa-orange     { background-color: #f97316; }
+                .jasa-orange-text{ color: #f97316; }
+                .jasa-white-text { color: #ffffff; }
+                .jasa-navy-text  { color: #0f2e4c; }
+
+                .btn-orange {
+                    display: inline-block;
+                    background-color: #f97316;
+                    color: #ffffff;
+                    font-weight: 700;
+                    padding: 0.85rem 2rem;
+                    border-radius: 0.5rem;
+                    text-decoration: none;
+                    transition: all 0.25s ease;
+                    border: 2px solid #f97316;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    letter-spacing: 0.02em;
+                }
+                .btn-orange:hover {
+                    background-color: #ea6c0a;
+                    border-color: #ea6c0a;
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 24px rgba(249,115,22,0.35);
+                }
+
+                .btn-outline-white {
+                    display: inline-block;
+                    background-color: transparent;
+                    color: #ffffff;
+                    font-weight: 700;
+                    padding: 0.85rem 2rem;
+                    border-radius: 0.5rem;
+                    text-decoration: none;
+                    transition: all 0.25s ease;
+                    border: 2px solid rgba(255,255,255,0.6);
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    letter-spacing: 0.02em;
+                }
+                .btn-outline-white:hover {
+                    background-color: rgba(255,255,255,0.1);
+                    border-color: #ffffff;
+                    transform: translateY(-2px);
+                }
+
+                .btn-outline-navy {
+                    display: inline-block;
+                    background-color: transparent;
+                    color: #0f2e4c;
+                    font-weight: 700;
+                    padding: 0.85rem 2rem;
+                    border-radius: 0.5rem;
+                    text-decoration: none;
+                    transition: all 0.25s ease;
+                    border: 2px solid #0f2e4c;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    letter-spacing: 0.02em;
+                }
+                .btn-outline-navy:hover {
+                    background-color: #0f2e4c;
+                    color: #ffffff;
+                    transform: translateY(-2px);
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        const sections = Array.isArray(pageConfig.content?.sections) ? pageConfig.content.sections : [];
+        let compiledHtml = '';
+
+        for (const sec of sections) {
+            if (sec.visible === false) continue;
+            try {
+                const sectionVariant = sec.variant || (
+                    sec.type === 'hero'     ? 'split-navy'     :
+                    sec.type === 'about'    ? 'simple-navy'    :
+                    sec.type === 'services' ? 'grid-navy'      :
+                    sec.type === 'pricing'  ? 'grid-navy'      :
+                    sec.type === 'faq'      ? 'accordion-navy' :
+                    'footer-navy'
+                );
+                const moduleName = `${sec.type}-${sectionVariant}.js`;
+                console.log(`[LP Router] Loading section: ${sec.type}/${moduleName}...`);
+                
+                const module = await import(`./templates/components/sections/${sec.type}/${moduleName}${cacheBustQuery}`);
+                if (typeof module.render === 'function') {
+                    compiledHtml += module.render(sec.content || {}, pageConfig, BRAND_CONFIG);
+                }
+            } catch (err) {
+                console.error(`[LP Router] Failed to load section module ${sec.type}:`, err);
+            }
+        }
+
+        appEl.innerHTML = compiledHtml || renderError('Belum ada section yang ditambahkan pada halaman ini.');
+        return;
+    }
+
     if (templateType === 'birthday') {
         const urlParams = new URLSearchParams(window.location.search);
         const guestName = urlParams.get('to') || urlParams.get('recipient') || 'Tamu Undangan';
