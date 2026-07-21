@@ -239,6 +239,7 @@ const renderPage = async (pageConfig) => {
             if (sec.visible === false) continue;
             try {
                 const sectionVariant = sec.variant || (
+                    sec.type === 'header'       ? 'navbar-navy'    :
                     sec.type === 'hero'         ? 'split-navy'     :
                     sec.type === 'about'        ? 'simple-navy'    :
                     sec.type === 'services'     ? 'grid-navy'      :
