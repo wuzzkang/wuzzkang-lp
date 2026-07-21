@@ -246,6 +246,7 @@ const renderPage = async (pageConfig) => {
                     sec.type === 'pricing'      ? 'grid-navy'      :
                     sec.type === 'faq'          ? 'accordion-navy' :
                     sec.type === 'social_proof' ? 'navy'           :
+                    sec.type === 'custom'       ? 'cards-navy'     :
                     'footer-navy'
                 );
                 const moduleName = `${sec.type}-${sectionVariant}.js`;
