@@ -239,11 +239,12 @@ const renderPage = async (pageConfig) => {
             if (sec.visible === false) continue;
             try {
                 const sectionVariant = sec.variant || (
-                    sec.type === 'hero'     ? 'split-navy'     :
-                    sec.type === 'about'    ? 'simple-navy'    :
-                    sec.type === 'services' ? 'grid-navy'      :
-                    sec.type === 'pricing'  ? 'grid-navy'      :
-                    sec.type === 'faq'      ? 'accordion-navy' :
+                    sec.type === 'hero'         ? 'split-navy'     :
+                    sec.type === 'about'        ? 'simple-navy'    :
+                    sec.type === 'services'     ? 'grid-navy'      :
+                    sec.type === 'pricing'      ? 'grid-navy'      :
+                    sec.type === 'faq'          ? 'accordion-navy' :
+                    sec.type === 'social_proof' ? 'navy'           :
                     'footer-navy'
                 );
                 const moduleName = `${sec.type}-${sectionVariant}.js`;
