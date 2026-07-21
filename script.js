@@ -132,6 +132,11 @@ const renderPage = async (pageConfig) => {
     const templateType = pageConfig.meta?.template_type || 'store';
     
     if (templateType === 'dynamic-builder') {
+        // Ensure consistent dark body background (matching the editor preview sandbox)
+        document.body.style.backgroundColor = '#020617'; // bg-slate-950
+        document.body.classList.remove('text-slate-800', 'bg-slate-50');
+        document.body.classList.add('text-slate-100', 'bg-slate-950');
+
         const meta = pageConfig.meta || {};
         const primaryColor = meta.primary_color || '#3b82f6';
         const accentColor = meta.accent_color || '#f97316';
