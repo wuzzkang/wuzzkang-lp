@@ -259,7 +259,11 @@ const renderPage = async (pageConfig) => {
                 
                 const module = await import(`./templates/components/sections/${sec.type}/${moduleName}${cacheBustQuery}`);
                 if (typeof module.render === 'function') {
-                    compiledHtml += module.render(sec.content || {}, pageConfig, BRAND_CONFIG);
+                    const activeBrandConfig = {
+                        name: pageConfig.meta?.brand_name || pageConfig.meta?.title || BRAND_CONFIG.name || 'Siluet',
+                        domain: BRAND_CONFIG.domain || 'siluet.web.id'
+                    };
+                    compiledHtml += module.render(sec.content || {}, pageConfig, activeBrandConfig);
                 }
             } catch (err) {
                 console.error(`[LP Router] Failed to load section module ${sec.type}:`, err);
