@@ -240,6 +240,9 @@ const renderPage = async (pageConfig) => {
         const sections = Array.isArray(pageConfig.content?.sections) ? pageConfig.content.sections : [];
         let compiledHtml = '';
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const guestNameFromUrl = urlParams.get('to') || urlParams.get('recipient') || '';
+
         for (const sec of sections) {
             if (sec.visible === false) continue;
             try {
@@ -263,7 +266,11 @@ const renderPage = async (pageConfig) => {
                         name: pageConfig.meta?.brand_name || pageConfig.meta?.title || BRAND_CONFIG.name || 'Siluet',
                         domain: BRAND_CONFIG.domain || 'siluet.web.id'
                     };
-                    compiledHtml += module.render(sec.content || {}, pageConfig, activeBrandConfig);
+                    const secContent = { ...(sec.content || {}) };
+                    if (guestNameFromUrl && (sec.type === 'wedding_hero' || sec.type === 'hero')) {
+                        secContent.recipient_name = guestNameFromUrl;
+                    }
+                    compiledHtml += module.render(secContent, pageConfig, activeBrandConfig);
                 }
             } catch (err) {
                 console.error(`[LP Router] Failed to load section module ${sec.type}:`, err);
